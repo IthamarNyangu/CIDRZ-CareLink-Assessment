@@ -2,7 +2,7 @@
 
 ## Position and priorities
 
-As a Software Engineer, I would not unilaterally reorganise the team or impose policy. I would model the practices in my own work, make the current problems measurable, propose small changes to the engineering lead and help teammates adopt them. Clinical services must continue, so the plan reduces risk incrementally rather than freezing delivery.
+As a Software Engineer, I would not unilaterally reorganise the team or impose policy. I would model the practices in my own work, make the current problems measurable, propose small changes to the Senior Software Engineer and help teammates adopt them. Clinical services must continue, so the plan reduces risk incrementally rather than freezing delivery.
 
 The first two changes I would push for are:
 
