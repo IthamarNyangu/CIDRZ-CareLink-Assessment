@@ -78,4 +78,18 @@ describe('CareLink follow-up screen', () => {
     expect(requestUrl).toContain('status=missed')
     expect(requestUrl).toContain('facility_id=FAC-0101')
   })
+
+  it('provides a logical keyboard path from navigation into the worklist', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => jsonResponse(successResponse)))
+    const user = userEvent.setup()
+    render(<App />)
+    await screen.findByText('Mary Banda')
+
+    await user.tab()
+    expect(screen.getByRole('link', { name: 'CareLink home' })).toHaveFocus()
+    await user.tab()
+    expect(screen.getByLabelText('Access profile')).toHaveFocus()
+    await user.tab()
+    expect(screen.getByLabelText('Facility ID')).toHaveFocus()
+  })
 })

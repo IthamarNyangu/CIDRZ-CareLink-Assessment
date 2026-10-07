@@ -111,11 +111,9 @@ function App() {
       <main id="main-content" className="page-content">
         <section className="page-heading" aria-labelledby="page-title">
           <div>
-            <p className="eyebrow">Patient follow-up</p>
-            <h1 id="page-title">Care that never loses sight of a patient.</h1>
+            <h1 id="page-title">Patient follow-up</h1>
             <p className="heading-copy">
-              Prioritise missed appointments, coordinate outreach and keep each facility’s
-              follow-up queue focused.
+              Review missed appointments and coordinate patient outreach.
             </p>
           </div>
         </section>
@@ -180,22 +178,42 @@ function App() {
               </select>
             </label>
 
-            <label>
-              <span>Threshold in days</span>
-              <input
-                type="number"
-                min="1"
-                max="365"
-                required
-                value={draftQuery.overdueDays}
-                onChange={(event) =>
-                  setDraftQuery((current) => ({
-                    ...current,
-                    overdueDays: Number(event.target.value),
-                  }))
-                }
-              />
-            </label>
+            <div className="filter-row">
+              <label>
+                <span>Threshold in days</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="365"
+                  required
+                  value={draftQuery.overdueDays}
+                  onChange={(event) =>
+                    setDraftQuery((current) => ({
+                      ...current,
+                      overdueDays: Number(event.target.value),
+                    }))
+                  }
+                />
+              </label>
+
+              <label>
+                <span>Rows per page</span>
+                <select
+                  value={draftQuery.pageSize}
+                  onChange={(event) =>
+                    setDraftQuery((current) => ({
+                      ...current,
+                      pageSize: Number(event.target.value),
+                    }))
+                  }
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
+            </div>
 
             <label>
               <span>Sort order</span>
@@ -211,24 +229,6 @@ function App() {
                 <option value="days_overdue_desc">Most overdue first</option>
                 <option value="days_overdue_asc">Least overdue first</option>
                 <option value="patient_number_asc">Patient number</option>
-              </select>
-            </label>
-
-            <label>
-              <span>Rows per page</span>
-              <select
-                value={draftQuery.pageSize}
-                onChange={(event) =>
-                  setDraftQuery((current) => ({
-                    ...current,
-                    pageSize: Number(event.target.value),
-                  }))
-                }
-              >
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
               </select>
             </label>
 

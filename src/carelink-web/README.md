@@ -19,3 +19,7 @@ The UI includes facility/status filtering, sorting, pagination, manager and
 clinic demonstration access profiles, responsive layouts, accessible labels,
 and explicit loading, empty, validation, unauthorised, forbidden and general
 error states.
+
+The shared clinical theme is defined with semantic CSS tokens in `src/App.css`.
+Inter weights 400, 500 and 600 are bundled as local WOFF2 assets through
+`@fontsource/inter`; the application does not depend on an external font service.
