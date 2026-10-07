@@ -89,6 +89,21 @@ dotnet run --project src/CareLink.Api -- --seed-volume=100000
 This creates 100,000 patients and 400,000 visits in a separate ignored SQLite
 file. See [PERFORMANCE.md](PERFORMANCE.md) for the measured query and results.
 
+### Small demo versus volume database
+
+The two local database files serve different purposes and are not combined:
+
+| Database | Contents | Purpose |
+| --- | ---: | --- |
+| `carelink.db` | 2 facilities, 8 patients, 8 visits | Readable examples for learning and UI demonstrations |
+| `carelink-volume.db` | 150 facilities, 100,000 patients, 400,000 visits | Repeatable scale and performance verification |
+
+The active database is selected through the `CareLink` connection string.
+Swagger displays its filename near the top of the page. The follow-up endpoint
+will never return all 100,000 patients: it first restricts data to one facility,
+selects each patient's latest visit, filters to the requested status and then
+returns only the requested page.
+
 Front-end commands will be added after the React application is scaffolded.
 
 ## Scope discipline

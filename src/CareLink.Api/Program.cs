@@ -4,6 +4,7 @@ using CareLink.Api.Middleware;
 using CareLink.Api.Security;
 using CareLink.Api.Services;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Text.Json;
@@ -15,6 +16,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+var connectionString = builder.Configuration.GetConnectionString("CareLink")
+    ?? throw new InvalidOperationException("The CareLink connection string is required.");
+var activeDatabaseName = Path.GetFileName(
+    new SqliteConnectionStringBuilder(connectionString).DataSource);
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(
@@ -22,6 +28,13 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "CareLink API",
+        Version = "v1",
+        Description = $"Active local database: {activeDatabaseName}. " +
+                      "Follow-up responses are facility-scoped, status-filtered and paginated."
+    });
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -44,7 +57,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddDbContext<CareLinkDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("CareLink")));
+    options.UseSqlite(connectionString));
 builder.Services.AddSingleton<IDateProvider, SystemDateProvider>();
 builder.Services.AddScoped<IFollowUpQueryService, FollowUpQueryService>();
 builder.Services.AddSingleton<IFacilityAccessService, FacilityAccessService>();
