@@ -83,16 +83,28 @@ function App() {
       <header className="topbar">
         <a className="brand" href="#main-content" aria-label="CareLink home">
           <span className="brand-mark" aria-hidden="true">
-            <HeartPulseIcon />
+            <EcgIcon />
           </span>
           <span>
             <strong>CareLink</strong>
             <small>Continuity of care</small>
           </span>
         </a>
-        <div className="environment-chip">
-          <span className="environment-dot" aria-hidden="true" />
-          Demonstration environment
+        <div className="topbar-actions">
+          <label className="nav-access-control">
+            <span>Access profile</span>
+            <select
+              value={accessProfile}
+              onChange={(event) => setAccessProfile(event.target.value as AccessProfile)}
+            >
+              <option value="manager">CareLink manager · all facilities</option>
+              <option value="clinic">Clinic staff · FAC-0101 only</option>
+            </select>
+          </label>
+          <div className="environment-chip">
+            <span className="environment-dot" aria-hidden="true" />
+            Demonstration environment
+          </div>
         </div>
       </header>
 
@@ -106,16 +118,6 @@ function App() {
               follow-up queue focused.
             </p>
           </div>
-          <label className="access-control">
-            <span>Access profile</span>
-            <select
-              value={accessProfile}
-              onChange={(event) => setAccessProfile(event.target.value as AccessProfile)}
-            >
-              <option value="manager">CareLink manager · all facilities</option>
-              <option value="clinic">Clinic staff · FAC-0101 only</option>
-            </select>
-          </label>
         </section>
 
         <section className="summary-grid" aria-label="Queue summary">
@@ -435,7 +437,7 @@ function formatDate(date: string) {
 }
 
 const iconProps = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
-function HeartPulseIcon() { return <svg {...iconProps}><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1h4l1.5-3 3 7 1.5-4H20l.8-.8a5.5 5.5 0 0 0 0-8Z" /></svg> }
+function EcgIcon() { return <svg {...iconProps}><path d="M2 12h5l2.5-6 5 12 2.5-6h5" /></svg> }
 function PeopleIcon() { return <svg {...iconProps}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg> }
 function ClinicIcon() { return <svg {...iconProps}><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 21v-4h6v4M9 7h6M12 4v6" /></svg> }
 function CalendarIcon() { return <svg {...iconProps}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 11h18M8 15h.01M12 15h.01M16 15h.01" /></svg> }

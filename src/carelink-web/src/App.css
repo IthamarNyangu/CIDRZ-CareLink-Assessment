@@ -73,6 +73,11 @@ button, select { cursor: pointer; }
   font-weight: 650;
 }
 
+.topbar-actions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+.nav-access-control { display: flex; align-items: center; gap: 9px; }
+.nav-access-control > span { margin: 0; white-space: nowrap; font-size: .72rem; }
+.nav-access-control select { width: 250px; min-height: 38px; padding: 7px 10px; font-size: .78rem; }
+
 .environment-dot { width: 8px; height: 8px; border-radius: 50%; background: #36a475; box-shadow: 0 0 0 4px #dff4ea; }
 
 .page-content { max-width: 1480px; margin: 0 auto; padding: 48px clamp(20px, 5vw, 72px) 72px; }
@@ -100,7 +105,6 @@ h2 { margin-bottom: 0; font-size: 1.28rem; letter-spacing: -.025em; }
 h3 { margin-bottom: 8px; font-size: 1.2rem; }
 .heading-copy { max-width: 700px; margin-bottom: 0; color: var(--muted); font-size: 1rem; line-height: 1.65; }
 
-.access-control { min-width: 300px; }
 label > span { display: block; margin-bottom: 7px; color: #405650; font-size: .78rem; font-weight: 750; }
 
 input, select {
@@ -188,7 +192,9 @@ tbody tr:hover { background: #fbfdfc; }
 
 @media (max-width: 900px) {
   .page-heading { align-items: stretch; flex-direction: column; }
-  .access-control { min-width: 0; max-width: 420px; }
+  .topbar-actions { gap: 9px; }
+  .nav-access-control > span { display: none; }
+  .nav-access-control select { width: 220px; }
   .summary-grid { grid-template-columns: 1fr; }
   .workspace { grid-template-columns: 1fr; }
   .filter-panel { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -196,10 +202,13 @@ tbody tr:hover { background: #fbfdfc; }
 }
 
 @media (max-width: 640px) {
-  .topbar { height: auto; min-height: 70px; padding: 14px 18px; }
+  .topbar { height: auto; min-height: 70px; padding: 14px 18px; align-items: stretch; flex-direction: column; gap: 12px; }
+  .topbar-actions { width: 100%; }
+  .nav-access-control { width: 100%; }
+  .nav-access-control select { width: 100%; }
   .environment-chip { display: none; }
   .page-content { padding: 32px 14px 48px; }
-  .page-heading > div, .access-control, .summary-grid, .workspace { width: 100%; min-width: 0; }
+  .page-heading > div, .summary-grid, .workspace { width: 100%; min-width: 0; }
   h1, .heading-copy { overflow-wrap: anywhere; }
   .summary-card { min-width: 0; }
   .filter-panel { grid-template-columns: 1fr; }
