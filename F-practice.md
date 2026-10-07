@@ -1,86 +1,70 @@
 # 90-day delivery and engineering-practice plan
 
-## Position and priorities
+## Position and first priorities
 
-As a Software Engineer, I would not unilaterally reorganise the team or impose policy. I would model the practices in my own work, make the current problems measurable, propose small changes to the engineering lead and help teammates adopt them. Clinical services must continue, so the plan reduces risk incrementally rather than freezing delivery.
+As a Software Engineer, I would model good practice, provide evidence and propose changes to the engineering lead rather than claim management authority. Clinical services continue, so improvement must be incremental.
 
-The first two changes I would push for are:
+My first two changes would be:
 
-1. **All production changes go through version control, review and an auditable release path.** Direct server fixes create unknown production state, bypass review and make recovery difficult. An emergency path can be fast, but must still produce a reviewed commit and deployment record.
-2. **Create a small reliable CI quality gate around changed code.** Stable build, lint and high-value tests give reviewers fast evidence and prevent more defects while the broader test suite is repaired. Requiring an unreliable full suite immediately would teach people to ignore failures.
+1. **Route every production change through version control, review and an auditable release path.** Direct fixes create unknown production state. Emergencies may use a fast path, but still need approval, rollback and an immediate reviewed commit.
+2. **Create a small reliable CI gate.** Build, lint and high-value tests should protect new changes. An unreliable full suite should not become a gate until flaky tests are repaired.
 
-## Days 1-30: stabilise and make work visible
+## Days 1-30: stabilise and expose the work
 
-### Change now
+### Change
 
-- Agree a short working agreement: formatting, naming, secure handling, error/logging rules, definition of done and small pull requests.
-- Use short-lived feature/fix branches with protected `main`; require one reviewer and passing build/lint/stable tests. Pair on sensitive migrations, authentication and clinical rules.
-- Stop routine direct production editing. Document a time-boxed emergency process: incident approval, backup/rollback, smallest change, monitoring, then a pull request immediately after service restoration.
-- Identify a small smoke/regression suite for login, patient lookup, encounter saving and follow-up. Quarantine flaky tests visibly with owners and expiry dates rather than silently rerunning them.
-- Add CI that produces one versioned build artefact and dependency/security findings. The same artefact should progress toward each environment.
-- Triage the 300-item backlog with the business analyst and programme representatives: remove duplicates, identify incidents/regulatory deadlines, add an owner and outcome, and separate product work from technical debt.
-- Put current API behaviour and runbooks next to the code. Add a documentation check to the definition of done.
-- Start a weekly defect review without blame: source, escaped test, affected release and prevention action.
+- Agree a short working standard covering security, logging, style, definition of done and small pull requests.
+- Use short-lived branches and protected `main`; require one reviewer and stable CI checks. Pair on authentication, migrations and clinical rules.
+- Stop routine server edits and document the emergency process: approval, backup/rollback, minimal fix, monitoring and source-control reconciliation.
+- Identify stable smoke tests for login, patient search, encounter saving and follow-up. Quarantine flaky tests visibly with an owner and expiry.
+- Build one versioned artefact in CI. Triage the 300-item backlog with the business analyst into incidents, product outcomes and technical debt; remove duplicates and assign owners/priorities.
+- Store current API documentation and runbooks beside the code. Review escaped defects weekly without blame.
 
-### Deliberately leave alone
+### Leave alone for now
 
-I would not pursue a large platform rewrite, chase a coverage percentage, change every branching convention, automate production deployment immediately or estimate all technical debt. Those changes would consume attention before the release process is trustworthy.
+Do not rewrite the platform, chase a coverage percentage, automate production immediately or estimate all historical debt. First make the basic path trustworthy.
 
-### Evidence it worked
+### Evidence
 
-- 100% of normal production changes have a linked commit, review and deployment record.
-- CI produces a reproducible artefact and stays green for agreed stable checks.
-- Backlog items have category, owner and priority; the oldest untriaged count falls sharply.
-- Baselines exist for change-failure rate, escaped defects, lead time, deployment duration, rollback time, flaky tests and API-document age.
+Normal production changes have linked commits, reviews and deployment records; stable CI stays green; the untriaged backlog falls; and baselines exist for change-failure rate, escaped defects, lead time, deployment duration, recovery time and flaky tests.
 
 ## Days 31-60: make releases repeatable
 
-### Change now
+### Change
 
-- Expand tests around recent defect clusters and critical clinical workflows, using a test pyramid: many rule/unit tests, database integration tests for migrations and constraints, and a few end-to-end journeys.
-- Repair or replace flaky tests by root cause; do not reward raw test counts. Assign changed-code tests during refinement and review.
-- Automate deployment to a production-like staging environment, including migration rehearsal, configuration validation, smoke tests and rollback instructions.
-- Adopt backward-compatible expand-and-contract migrations so older facility clients and new servers can coexist during rollout.
-- Introduce a regular, smaller release cadence with release notes, named release owner, go/no-go checklist, support contact and a representative pilot group.
-- Generate/OpenAPI-check API documentation from code, add examples and nominate an owner for each integration contract.
-- Reserve an explicit portion of capacity for measured technical debt and operational defects. Rank debt by patient/service risk, frequency, change friction and cost of delay.
-- Pair a senior/junior engineer on one real change each cycle and rotate review partners; use review comments to teach the reason, not only demand a correction.
+- Add tests around recent defects and critical workflows: rule tests, database/migration integration tests and a few end-to-end journeys. Repair flaky tests by root cause.
+- Automate staging deployment, migration rehearsal, configuration checks, smoke tests and rollback instructions.
+- Use backward-compatible expand-and-contract migrations so old and new facility clients can coexist.
+- Release smaller changes on a regular cadence with notes, an owner, go/no-go checklist, support plan and representative pilot sites.
+- Generate/check API documentation from code. Reserve capacity for debt ranked by clinical risk, recurrence, change friction and cost of delay.
+- Pair senior and junior engineers on real changes and rotate reviewers, explaining reasons rather than only requesting corrections.
 
-### Deliberately leave alone
+### Leave alone for now
 
-I would not require full continuous deployment to clinics, split the system into microservices or block releases on an arbitrary organisation-wide coverage target. Connectivity, migration and rollback evidence must mature first.
+Do not introduce microservices, continuous production deployment or an arbitrary organisation-wide coverage gate. Migration and rollback evidence must mature first.
 
-### Evidence it worked
+### Evidence
 
-- Staging deployment is automated and repeatable; migration and rollback rehearsals are recorded.
-- Median review and deployment lead time falls without an increase in escaped defects.
-- Flaky-test rate and defects recurring from the same cause decline.
-- API changes and release notes are published with the release, not months later.
-- Pilot releases detect issues before national rollout and rollback time is measured.
+Staging deployment and rollback rehearsal are repeatable; review/deployment lead time falls without more escaped defects; flaky and recurring defects decline; documentation ships with changes; and pilots find issues before national rollout.
 
-## Days 61-90: controlled delivery and continuous improvement
+## Days 61-90: control production delivery
 
-### Change now
+### Change
 
-- Automate a controlled production pipeline with approvals, signed/versioned artefacts, audit trail, health checks and staged rollout. Production remains protected from manual file changes.
-- Use feature flags and a canary group across reliable, intermittent and offline facilities. Pause or roll back based on clinic-facing thresholds such as login failures, sync backlog and encounter-save errors.
-- Add contract tests for laboratory/reporting integrations and supported older clients. Test restore procedures and offline upgrade/recovery, not only backups.
-- Hold a monthly product/engineering review using a small balanced dashboard: change-failure rate, escaped clinical defects, lead time, deployment frequency, recovery time, sync freshness, flaky tests and stakeholder outcomes.
-- Convert the prioritised backlog into outcome-based items with acceptance examples. Programme teams join refinement early; engineers expose uncertainty and slice work before commitment.
-- Create short design records for consequential decisions and a rotating technical-debt review. Continue pairing, short learning sessions and supportive review calibration.
+- Create an approved production pipeline using signed/versioned artefacts, audit records, health checks and staged rollout.
+- Use feature flags and a canary group covering reliable, intermittent and offline facilities. Pause on clinic-facing thresholds such as sync backlog or encounter-save errors.
+- Add laboratory/reporting contract tests, older-client compatibility checks, restore tests and offline upgrade/recovery tests.
+- Review a balanced dashboard monthly: change failures, escaped/recurring defects, lead and recovery time, deployment frequency, sync freshness and stakeholder outcomes.
+- Refine the backlog jointly with programme teams using outcomes and acceptance examples. Record consequential design decisions and continue pairing and short learning sessions.
 
-### Deliberately leave alone
+### Leave alone for now
 
-I would not optimise teams against individual velocity, use coverage as a performance target, or promise that all 300 backlog items and historical debt will be completed. Those incentives encourage gaming and hide risk. Larger architecture or team-structure changes require evidence from the first 90 days.
+Do not measure individual velocity, turn coverage into a target or promise all backlog/debt work. Larger architecture or team changes require evidence from the first 90 days.
 
-### Evidence it worked
+### Evidence
 
-- Releases no longer take three days and rarely require an immediate hotfix; failed changes recover within an agreed time.
-- Direct, untracked production edits are zero, including emergencies being reconciled afterward.
-- Clinic-facing error and sync-freshness measures remain within thresholds during staged rollout.
-- Defect recurrence, stale documentation and backlog age trend down for several cycles.
-- Programme and engineering representatives can describe the same priorities, acceptance conditions and release risks.
+Releases take less time and rarely need hotfixes; untracked server edits reach zero; failed changes recover within an agreed time; clinic error/sync measures stay within pilot thresholds; and defect recurrence, stale documentation and backlog age trend down.
 
-## How I would behave in this team
+## How I would behave
 
-I would keep pull requests small, add tests around every defect I fix, update documentation with behaviour changes, ask for review early and raise production risk with evidence rather than blame. When requirements change, I would make the effect on scope and delivery visible, offer smaller safe slices, and confirm decisions with the business analyst. I would help junior teammates through pairing and constructive reviews, while asking senior engineers for guidance on areas where I lack operational context.
+I would keep changes small, test every defect fix, update documentation, request review early and raise risk with evidence rather than blame. When requirements change, I would show the effect on scope and offer smaller safe slices. I would mentor through pairing while seeking senior guidance where I lack operational context.

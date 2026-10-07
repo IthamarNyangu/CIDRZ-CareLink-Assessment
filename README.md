@@ -1,110 +1,84 @@
-# CareLink Follow Up
+# CareLink Follow-Up
 
-CareLink Follow Up is a thin, working vertical slice for identifying patients whose latest scheduled follow-up has been missed. The submission contains an ASP.NET Core API, a React and TypeScript screen, database migrations, deterministic sample-data generation, automated tests, and the written assessment sections.
+CareLink Follow-Up is a working vertical slice for identifying patients who need follow-up after a missed appointment. It contains an ASP.NET Core API, React/TypeScript screen, relational schema and migration, deterministic seeders, access controls, automated tests and the assessment's written sections.
 
-## Current implementation status
+## What is implemented
 
-The API vertical slice, migration, sample data, filtering, pagination, validation,
-static role tokens, facility scoping, correlation IDs and API tests are implemented.
-The React screen and written assessment sections remain in progress.
+- `GET /api/follow-up` with facility and status filtering, configurable overdue threshold, days-overdue sorting and server-side pagination.
+- Latest-visit business rule evaluated in SQLite rather than application memory.
+- EF Core migration from an empty database, database constraints and indexes.
+- Small readable demonstration seed plus a reproducible 100,000-patient/400,000-visit scale seed.
+- Static demonstration authentication, role/facility authorisation, consistent problem responses and correlation IDs.
+- React screen with typed API service, loading, empty, error/retry and success states, filters, status text, responsive table/cards and pagination.
+- Eleven backend tests and four frontend tests covering the business boundary, authorisation, validation and high-value UI states.
+
+## Deliberately stubbed or left out
+
+The offline facility client, synchronisation engine, laboratory/reporting integrations and production identity provider are architecture designs, not part of this thin vertical slice. Authentication uses two non-secret assessment tokens. `POST /api/follow-up/{id}/contacted` is not implemented; it was treated as a stretch goal after the required endpoint, screen and written work. Production hardening would also add rate limiting, audit storage, encrypted facility storage, broader browser/assistive-technology testing and deployment automation.
 
 ## Stack and rationale
 
-- **ASP.NET Core on .NET 8:** This matches my strongest application-development experience and provides mature support for dependency injection, validation, logging, authorization and automated tests.
-- **Entity Framework Core with SQLite:** SQLite is a relational database that runs locally without Docker or a licensed database server. It supports migrations, constraints, indexes and the required dataset size. The design can be moved to PostgreSQL or SQL Server in production.
-- **React with TypeScript:** React is the preferred front-end option in the brief. TypeScript provides a typed API contract and helps prevent invalid UI states.
-- **xUnit and Vitest:** These cover the server-side business rule and the front-end states judged most valuable.
+- **ASP.NET Core on .NET 8:** strong typed contracts, dependency injection, validation, logging, authorisation and test support.
+- **Entity Framework Core with SQLite:** a local relational database requiring no Docker or licensed server, while still supporting migrations, transactions, constraints and indexes. The production design would use an approved in-country PostgreSQL or SQL Server deployment.
+- **React 18 with TypeScript and Vite:** the preferred frontend in the brief, with typed API boundaries and a small build/runtime footprint.
+- **xUnit and Vitest/Testing Library:** rule and API tests on the server plus user-visible state tests in the client.
 
 ## Repository structure
 
 ```text
 src/
-  CareLink.Api/          ASP.NET Core API
+  CareLink.Api/          ASP.NET Core API, migration and seeders
   carelink-web/          React and TypeScript client
 tests/
-  CareLink.Api.Tests/    API and rule tests
+  CareLink.Api.Tests/    API, rule, access and scale-seeder tests
+A-architecture.md        Proposed national architecture and trade-offs
+C-review.md              Ranked review of both supplied extracts and refactor
+D-resilience.md          Duplicate replay, offline sync and data integrity
+F-practice.md            90-day engineering-practice plan
+G-briefing.md            Executive briefing (339 words)
+INTERVIEW-QA.md          Study questions and model answers
+PERFORMANCE.md           Reproducible scale-test method and observations
 ```
 
-The required architecture, code-review, resilience, engineering-practice and executive-briefing documents will remain at the repository root so the panel can find them immediately.
+## Prerequisites
 
-## Follow up rule and assumptions
+- .NET 8 SDK
+- Node.js 20 or later with npm
+- Git
 
-The brief deliberately leaves some edge cases open. This implementation uses the following interpretation:
+SQLite is supplied through the .NET dependency; Docker, SSMS and a separate database server are not required.
 
-1. The most recent visit is selected for each patient.
-2. A patient is not in the follow-up worklist when that visit has no `next_appointment_date`.
-3. Dates are compared as calendar dates, rather than local clock timestamps.
-4. For the default threshold of seven days, an appointment must be strictly more than seven days late to be returned by the default query. An appointment exactly seven days late is a boundary case and is not yet overdue under this rule.
-5. If the patient attended another visit after an earlier appointment date, that earlier missed appointment is no longer actionable. The new most-recent visit determines the patient's status.
-6. Facility restrictions are enforced on the server. A clinician cannot obtain another facility's patients by changing a query parameter.
+## Run from a clean machine
 
-The brief asks the screen to show `due_soon`, `missed` and `overdue`, while the core endpoint description focuses on records more than the overdue threshold late. It also shows a response filtered by `status=overdue` that contains an item labelled `missed`. I resolve this as follows:
-
-- `due_soon`: appointment date is today or within the next seven days;
-- `missed`: appointment is one through `overdue_days` days late;
-- `overdue`: appointment is more than `overdue_days` days late;
-- no `status`: return the default overdue queue required by Section B1.
-
-When a status filter is supplied, every returned item's `follow_up_status` must match that filter. This differs from the contradictory sample response and is documented so that the behaviour is predictable and testable.
-
-## Running the API
+Clone the repository and restore/build the backend:
 
 ```powershell
+git clone <repository-url>
+cd CIDRZ-CareLink-Assessment
 dotnet restore
-dotnet test
+dotnet build --no-restore
+```
+
+Create the database from the committed migration and add the small demonstration data:
+
+```powershell
 dotnet run --project src/CareLink.Api -- --seed-demo
+```
+
+The seed command exits after creating `src/CareLink.Api/carelink.db`. It is idempotent: rerunning it does not duplicate the demonstration records.
+
+Start the API:
+
+```powershell
 dotnet run --project src/CareLink.Api --launch-profile http
 ```
 
-The first run applies the migration and creates deterministic demonstration data.
-It is safe to run again because the seeder exits when data already exists. The second
-run starts the API and Swagger UI at `http://localhost:5214/swagger`.
+Open `http://localhost:5214/swagger`. Select **Authorize** and enter one of:
 
-The protected endpoint is:
+- `manager-demo-token`: reads all demonstration facilities;
+- `clinic-0101-demo-token`: reads only `FAC-0101`.
 
-```text
-GET /api/follow-up?facility_id=FAC-0101&status=overdue&overdue_days=7&page=1&page_size=50
-```
-
-Swagger's **Authorize** button accepts either demonstration bearer token:
-
-- `manager-demo-token`: manager access to all facilities;
-- `clinic-0101-demo-token`: clinic staff access to `FAC-0101` only.
-
-These committed tokens are intentionally non-secret assessment fixtures. A production
-deployment would use an identity provider, short-lived signed tokens, secret management,
-auditing and a formal user-to-facility assignment process.
-
-Clients may provide an `X-Correlation-ID` request header. The API returns it in the
-response header and problem response so operational teams can match a reported failure
-to its server log. If none is supplied, the API generates one.
-
-To recreate the assessment-size performance database instead of the small demo:
-
-```powershell
-$env:ConnectionStrings__CareLink = 'Data Source=carelink-volume.db'
-dotnet run --project src/CareLink.Api -- --seed-volume=100000
-```
-
-This creates 100,000 patients and 400,000 visits in a separate ignored SQLite
-file. See [PERFORMANCE.md](PERFORMANCE.md) for the measured query and results.
-
-### Small demo versus volume database
-
-The two local database files serve different purposes and are not combined:
-
-| Database | Contents | Purpose |
-| --- | ---: | --- |
-| `carelink.db` | 2 facilities, 8 patients, 8 visits | Readable examples for learning and UI demonstrations |
-| `carelink-volume.db` | 150 facilities, 100,000 patients, 400,000 visits | Repeatable scale and performance verification |
-
-The active database is selected through the `CareLink` connection string.
-Swagger displays its filename near the top of the page. The follow-up endpoint
-will never return all 100,000 patients: it first restricts data to one facility,
-selects each patient's latest visit, filters to the requested status and then
-returns only the requested page.
-
-Run the React/TypeScript client in a second terminal after starting the API:
+In a second terminal, install and run the client:
 
 ```powershell
 cd src/carelink-web
@@ -112,11 +86,93 @@ npm install --legacy-peer-deps
 npm run dev
 ```
 
-Open `http://localhost:5173`. The Vite development server proxies `/api`
-requests to the API at `http://localhost:5214`, so no browser CORS workaround
-is required. Frontend verification commands are `npm run lint`, `npm test`
-and `npm run build`.
+Open `http://localhost:5173`. Vite proxies `/api` to `http://localhost:5214`, so the browser and Swagger use the same API and small database.
 
-## Scope discipline
+## Run the tests
 
-The required GET endpoint, screen, tests, written sections, presentation and reproducible setup take priority. `POST /api/follow-up/{id}/contacted` is a stretch goal and will be added only after all required work is complete.
+From the repository root:
+
+```powershell
+dotnet test
+cd src/carelink-web
+npm run lint
+npm test
+npm run build
+```
+
+I prioritised backend tests for the exact 7-day boundary, latest-visit rule, no-next-appointment rule, pagination/validation and facility isolation because errors there can omit or disclose patients. Frontend tests cover loading-to-success, empty, error/retry and access-profile behaviour because a blank or stale clinical queue could otherwise be misinterpreted.
+
+## Small demo and assessment-scale data
+
+The databases are intentionally separate and generated locally:
+
+| Database | Generated contents | Purpose |
+| --- | ---: | --- |
+| `carelink.db` | 2 facilities, 8 patients, 8 visits | Default readable UI, Swagger and interview demonstration |
+| `carelink-volume.db` | 150 facilities, 100,000 patients, 400,000 visits | Scale and query-plan verification |
+
+Database files are ignored by Git. The migration and seeders are the reproducible submission artefacts.
+
+To create and run the volume database in PowerShell:
+
+```powershell
+$env:ConnectionStrings__CareLink = 'Data Source=carelink-volume.db'
+dotnet run --project src/CareLink.Api -- --seed-volume=100000
+dotnet run --project src/CareLink.Api --launch-profile http
+```
+
+Swagger displays the active database filename. Clear the terminal-only override before returning to the demo database:
+
+```powershell
+Remove-Item Env:ConnectionStrings__CareLink
+```
+
+The scale run returned 50 of 222 matching `FAC-0101` records from 100,000 patients and 400,000 visits. Its first cold request took 381 ms; ten warm requests had a 35 ms median and 98 ms maximum on the development laptop. Server pagination reduces the browser's work from a possible 10,000 rendered records to at most 50 rows per request. These are local observations, not production guarantees; see [PERFORMANCE.md](PERFORMANCE.md).
+
+## Follow-up rule and assumptions
+
+1. The most recent visit is selected for each patient.
+2. A patient is excluded when that visit has no `next_appointment_date`.
+3. Dates are compared as calendar dates rather than local clock timestamps.
+4. With a threshold of seven days, an appointment becomes `overdue` only when it is **more than** seven days late. Exactly seven days remains `missed`.
+5. A later attended visit supersedes an earlier missed appointment. The new most-recent visit determines current follow-up status.
+6. Facility access is enforced by the API, not only hidden in the interface.
+
+The brief's sample request filters `status=overdue` but includes an item labelled `missed`. I chose consistent filter semantics:
+
+- `due_soon`: due today through the next seven days;
+- `missed`: one through `overdue_days` days late;
+- `overdue`: strictly more than `overdue_days` days late;
+- no status: the default overdue queue required by B1.
+
+Every returned item's status therefore matches an explicitly supplied status filter.
+
+## API behaviour and security
+
+```text
+GET /api/follow-up?facility_id=FAC-0101&status=overdue&overdue_days=7&sort=days_overdue_desc&page=1&page_size=50
+```
+
+Clients may supply `X-Correlation-ID`; otherwise the API generates one. It is returned in response headers and problem details so an error can be matched to safe structured logs. Logs do not include names, phone numbers, patient numbers or clinical content.
+
+The committed tokens are fixtures, not secrets. Production would use the Ministry-approved identity provider, short-lived signed tokens, protected secret storage, audited role/geographic assignments and an offline-access policy.
+
+## Frontend accessibility decisions
+
+1. Filters have persistent programmatic labels; buttons and navigation use native semantic elements and visible keyboard focus.
+2. Status always has a text label and is never communicated by colour alone. Error messages use an announced alert region and provide a retry path.
+3. Locally bundled Inter, WCAG-AA colour combinations, strong input boundaries, responsive reflow and server pagination support readability on older laptops and at narrow widths.
+
+I did not complete a full manual screen-reader/browser matrix or an exact interactive 200% zoom session within the assessment time. I inspected keyboard order, responsive layouts and high-DPI rendering, and would add NVDA plus supported-browser/200%-zoom acceptance checks before clinical release.
+
+## Known limitations and next steps
+
+Given another week I would:
+
+1. implement the authorised, idempotent contacted endpoint and its UI state;
+2. add integration tests against a production-target database engine and concurrent load tests;
+3. test clean installation in a separate machine/container and add CI;
+4. conduct NVDA, browser-compatibility and 200%-zoom testing with representative users;
+5. prototype the encrypted offline queue and conflict workflow described in Section D.
+
+The required GET endpoint, screen, migrations, seeders, tests and written analysis were prioritised over these extensions.
