@@ -10,7 +10,7 @@ public sealed class Patient
     public DateOnly DateOfBirth { get; set; }
     public PatientSex Sex { get; set; }
     public string? PhoneNumber { get; set; }
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTime CreatedAtUtc { get; init; } = DateTime.UtcNow;
 
     public Facility Facility { get; init; } = null!;
     public ICollection<Visit> Visits { get; } = new List<Visit>();

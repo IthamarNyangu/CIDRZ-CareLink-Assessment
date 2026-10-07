@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CareLink.Api.Data.Migrations
 {
     [DbContext(typeof(CareLinkDbContext))]
-    [Migration("20261007020258_InitialCreate")]
+    [Migration("20261007024031_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -51,7 +51,7 @@ namespace CareLink.Api.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT")
                         .HasColumnName("created_at");
 
@@ -111,7 +111,7 @@ namespace CareLink.Api.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT")
                         .HasColumnName("created_at");
 
@@ -135,7 +135,7 @@ namespace CareLink.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PatientId", "VisitDate");
+                    b.HasIndex("PatientId", "VisitDate", "CreatedAtUtc");
 
                     b.ToTable("visit", null, t =>
                         {

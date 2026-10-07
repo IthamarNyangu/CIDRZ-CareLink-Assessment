@@ -30,7 +30,7 @@ public sealed class CareLinkDbContext(DbContextOptions<CareLinkDbContext> option
         patient.Property(x => x.DateOfBirth).HasColumnName("date_of_birth");
         patient.Property(x => x.Sex).HasColumnName("sex").HasConversion<string>().HasMaxLength(10);
         patient.Property(x => x.PhoneNumber).HasColumnName("phone_number").HasMaxLength(30);
-        patient.Property(x => x.CreatedAt).HasColumnName("created_at");
+        patient.Property(x => x.CreatedAtUtc).HasColumnName("created_at");
         patient.HasIndex(x => new { x.FacilityId, x.PatientNumber }).IsUnique();
         patient.HasIndex(x => x.FacilityId);
         patient.HasOne(x => x.Facility)
@@ -49,8 +49,8 @@ public sealed class CareLinkDbContext(DbContextOptions<CareLinkDbContext> option
         visit.Property(x => x.VisitDate).HasColumnName("visit_date");
         visit.Property(x => x.NextAppointmentDate).HasColumnName("next_appointment_date");
         visit.Property(x => x.VisitType).HasColumnName("visit_type").HasConversion<string>().HasMaxLength(20);
-        visit.Property(x => x.CreatedAt).HasColumnName("created_at");
-        visit.HasIndex(x => new { x.PatientId, x.VisitDate });
+        visit.Property(x => x.CreatedAtUtc).HasColumnName("created_at");
+        visit.HasIndex(x => new { x.PatientId, x.VisitDate, x.CreatedAtUtc });
         visit.HasOne(x => x.Patient)
             .WithMany(x => x.Visits)
             .HasForeignKey(x => x.PatientId)

@@ -7,7 +7,7 @@ public sealed class Visit
     public DateOnly VisitDate { get; set; }
     public DateOnly? NextAppointmentDate { get; set; }
     public VisitType VisitType { get; set; }
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public DateTime CreatedAtUtc { get; init; } = DateTime.UtcNow;
 
     public Patient Patient { get; init; } = null!;
 }

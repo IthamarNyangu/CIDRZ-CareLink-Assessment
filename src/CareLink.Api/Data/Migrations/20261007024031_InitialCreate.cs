@@ -36,7 +36,7 @@ namespace CareLink.Api.Data.Migrations
                     date_of_birth = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     sex = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     phone_number = table.Column<string>(type: "TEXT", maxLength: 30, nullable: true),
-                    created_at = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
+                    created_at = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,7 +58,7 @@ namespace CareLink.Api.Data.Migrations
                     visit_date = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     next_appointment_date = table.Column<DateOnly>(type: "TEXT", nullable: true),
                     visit_type = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
+                    created_at = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,9 +84,9 @@ namespace CareLink.Api.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_visit_patient_id_visit_date",
+                name: "IX_visit_patient_id_visit_date_created_at",
                 table: "visit",
-                columns: new[] { "patient_id", "visit_date" });
+                columns: new[] { "patient_id", "visit_date", "created_at" });
         }
 
         /// <inheritdoc />
