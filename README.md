@@ -104,7 +104,18 @@ will never return all 100,000 patients: it first restricts data to one facility,
 selects each patient's latest visit, filters to the requested status and then
 returns only the requested page.
 
-Front-end commands will be added after the React application is scaffolded.
+Run the React/TypeScript client in a second terminal after starting the API:
+
+```powershell
+cd src/carelink-web
+npm install --legacy-peer-deps
+npm run dev
+```
+
+Open `http://localhost:5173`. The Vite development server proxies `/api`
+requests to the API at `http://localhost:5214`, so no browser CORS workaround
+is required. Frontend verification commands are `npm run lint`, `npm test`
+and `npm run build`.
 
 ## Scope discipline
 
