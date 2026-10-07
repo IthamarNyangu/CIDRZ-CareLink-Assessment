@@ -47,6 +47,7 @@ describe('CareLink follow-up screen', () => {
     expect(await screen.findByText('Mary Banda')).toBeInTheDocument()
     expect(screen.getByText('15 days late')).toBeInTheDocument()
     expect(screen.getByText('1–2 of 2')).toBeInTheDocument()
+    expect(screen.getByLabelText('Threshold days')).toBeInTheDocument()
   })
 
   it('explains when an authenticated user lacks facility access', async () => {

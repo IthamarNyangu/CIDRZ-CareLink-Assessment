@@ -180,7 +180,7 @@ function App() {
 
             <div className="filter-row">
               <label>
-                <span>Threshold in days</span>
+                <span>Threshold days</span>
                 <input
                   type="number"
                   min="1"

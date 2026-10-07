@@ -10,7 +10,7 @@ CareLink Follow-Up is a working vertical slice for identifying patients who need
 - Small readable demonstration seed plus a reproducible 100,000-patient/400,000-visit scale seed.
 - Static demonstration authentication, role/facility authorisation, consistent problem responses and correlation IDs.
 - React screen with typed API service, loading, empty, error/retry and success states, filters, status text, responsive table/cards and pagination.
-- Eleven backend tests and four frontend tests covering the business boundary, authorisation, validation and high-value UI states.
+- Twelve backend tests and four frontend tests covering the business boundary, demonstration seed, authorisation, validation and high-value UI states.
 
 ## Deliberately stubbed or left out
 
@@ -39,6 +39,7 @@ G-briefing.md            Executive briefing (339 words)
 PERFORMANCE.md           Reproducible scale-test method and observations
 declaration.md           AI/tool-use declaration
 E-presentation.pptx      Editable presentation source
+E-presentation.pdf       Submission-ready presentation
 ```
 
 ## Prerequisites
@@ -109,7 +110,7 @@ The databases are intentionally separate and generated locally:
 
 | Database | Generated contents | Purpose |
 | --- | ---: | --- |
-| `carelink.db` | 2 facilities, 8 patients, 8 visits | Default readable UI, Swagger and interview demonstration |
+| `carelink.db` | 2 facilities, 17 patients, 17 visits | Default readable UI, Swagger and interview demonstration |
 | `carelink-volume.db` | 150 facilities, 100,000 patients, 400,000 visits | Scale and query-plan verification |
 
 Database files are ignored by Git. The migration and seeders are the reproducible submission artefacts.
