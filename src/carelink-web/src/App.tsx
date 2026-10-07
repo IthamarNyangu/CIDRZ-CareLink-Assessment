@@ -91,6 +91,10 @@ function App() {
           </span>
         </a>
         <div className="topbar-actions">
+          <div className="environment-chip">
+            <span className="environment-dot" aria-hidden="true" />
+            Demonstration environment
+          </div>
           <label className="nav-access-control">
             <span>Access profile</span>
             <select
@@ -101,10 +105,6 @@ function App() {
               <option value="clinic">Clinic staff · FAC-0101 only</option>
             </select>
           </label>
-          <div className="environment-chip">
-            <span className="environment-dot" aria-hidden="true" />
-            Demonstration environment
-          </div>
         </div>
       </header>
 
