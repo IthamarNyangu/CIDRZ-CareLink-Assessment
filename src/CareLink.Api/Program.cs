@@ -65,6 +65,20 @@ builder.Services.AddProblemDetails(options =>
 
 var app = builder.Build();
 
+var volumeSeedArgument = args.FirstOrDefault(argument =>
+    argument.StartsWith("--seed-volume=", StringComparison.OrdinalIgnoreCase));
+int? volumePatientCount = null;
+if (volumeSeedArgument is not null)
+{
+    var rawCount = volumeSeedArgument[(volumeSeedArgument.IndexOf('=') + 1)..];
+    if (!int.TryParse(rawCount, out var parsedCount))
+    {
+        throw new ArgumentException("--seed-volume must contain a numeric patient count.");
+    }
+
+    volumePatientCount = parsedCount;
+}
+
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<CareLinkDbContext>();
@@ -75,11 +89,24 @@ await using (var scope = app.Services.CreateAsyncScope())
         var dateProvider = scope.ServiceProvider.GetRequiredService<IDateProvider>();
         await DemoDataSeeder.SeedAsync(dbContext, dateProvider.Today);
     }
+
+    if (volumePatientCount.HasValue)
+    {
+        var dateProvider = scope.ServiceProvider.GetRequiredService<IDateProvider>();
+        await VolumeDataSeeder.SeedAsync(
+            dbContext,
+            volumePatientCount.Value,
+            dateProvider.Today);
+    }
 }
 
-if (args.Contains("--seed-demo", StringComparer.OrdinalIgnoreCase))
+if (args.Contains("--seed-demo", StringComparer.OrdinalIgnoreCase) ||
+    volumePatientCount.HasValue)
 {
-    Console.WriteLine("Demo data seeded successfully.");
+    Console.WriteLine(
+        volumePatientCount.HasValue
+            ? $"Volume data seeded successfully: {volumePatientCount:N0} patients and {volumePatientCount * 4:N0} visits."
+            : "Demo data seeded successfully.");
     return;
 }
 

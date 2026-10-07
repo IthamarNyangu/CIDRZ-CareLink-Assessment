@@ -79,6 +79,16 @@ Clients may provide an `X-Correlation-ID` request header. The API returns it in 
 response header and problem response so operational teams can match a reported failure
 to its server log. If none is supplied, the API generates one.
 
+To recreate the assessment-size performance database instead of the small demo:
+
+```powershell
+$env:ConnectionStrings__CareLink = 'Data Source=carelink-volume.db'
+dotnet run --project src/CareLink.Api -- --seed-volume=100000
+```
+
+This creates 100,000 patients and 400,000 visits in a separate ignored SQLite
+file. See [PERFORMANCE.md](PERFORMANCE.md) for the measured query and results.
+
 Front-end commands will be added after the React application is scaffolded.
 
 ## Scope discipline
