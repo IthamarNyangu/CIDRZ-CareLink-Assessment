@@ -133,3 +133,45 @@ The latest timestamp does not prove that a clinical fact is correct, especially 
 ### 10. How do you protect sensitive data on a shared offline computer?
 
 Minimise the cached dataset, encrypt the database with a device-bound key, use named accounts and automatic locks, enforce operating-system permissions and full-disk encryption, use expiring offline access, and keep patient data out of logs and notifications. Never remove unsynchronised work merely to satisfy a cache-retention limit.
+
+## Section F: delivery and engineering practice
+
+### 1. What two engineering-practice changes would you make first?
+
+First, require every production change to have a version-controlled, reviewed and auditable path, including emergency fixes. Second, establish a small reliable CI gate around the build, linting and high-value tests. These reduce unknown production state and catch new defects immediately without waiting for a complete process transformation.
+
+### 2. Why not require the entire existing test suite to pass immediately?
+
+The brief says tests already fail for unrelated reasons. Making an unreliable suite a hard gate would block safe changes or train engineers to rerun and ignore failures. I would identify a trusted critical suite, quarantine flaky tests visibly with owners, and repair or replace them while steadily expanding the gate.
+
+### 3. Would you ban emergency production fixes completely?
+
+Clinical services may require urgent restoration, so I would preserve a controlled break-glass path. It needs an authorised incident, backup and rollback plan, minimal change, monitoring, and immediate reconciliation into source control and review. The exception must remain visible and measured rather than becoming the normal deployment method.
+
+### 4. Why use short-lived branches and small pull requests?
+
+They reduce merge conflicts, shorten feedback time and make reviews more accurate. A reviewer can understand and test a focused change more reliably than a large batch. Protected `main` plus short-lived branches provides control without the delay and divergence of long-running release branches.
+
+### 5. Why not use test coverage percentage as the main target?
+
+Coverage measures which lines executed, not whether important behaviour was asserted. A team can reach a high percentage with weak tests while missing clinical boundaries, access control and migrations. I would track reliable protection of critical workflows, escaped defects and defect recurrence, using coverage only as supporting information.
+
+### 6. How would you address the 300-item backlog?
+
+Work with the business analyst and programme representatives to remove duplicates, classify incidents, obligations, product outcomes and technical debt, and give active items an owner and priority. Refine the highest-risk work into small items with acceptance examples. I would not estimate or promise all 300 items before deciding which still matter.
+
+### 7. How do feature flags and pilot facilities reduce release risk?
+
+They separate deployment from broad activation. The team can enable a change for a small, representative group, observe clinic-facing measures and disable it without replacing the whole release. The pilot must include reliable, intermittent and offline sites so it tests the conditions most likely to fail nationally.
+
+### 8. Which metrics would you monitor?
+
+I would use a balanced set: change-failure rate, escaped and recurring defects, lead time, deployment frequency, recovery time, flaky-test rate, documentation freshness, sync freshness and clinical-operation failures. No single metric becomes an individual performance target, because that encourages gaming rather than better patient services.
+
+### 9. How would you improve the relationship between programme and engineering teams?
+
+Bring programme representatives and the business analyst into early refinement, express work as outcomes and acceptance examples, and make uncertainty and dependencies visible before commitment. When requirements change, show the effect on scope, risk and delivery, then offer smaller safe options instead of simply saying no or silently absorbing the change.
+
+### 10. What can you do as a Software Engineer if you are not the manager?
+
+Model the desired behaviour in my own changes, collect evidence, propose small improvements, pair with teammates and raise risks constructively. I can write tests, update documentation, keep reviews focused and avoid direct production changes. I would seek agreement from the engineering lead for team-wide controls rather than claiming authority I do not have.
