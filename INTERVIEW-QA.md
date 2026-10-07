@@ -91,3 +91,45 @@ They mean different things to the user. Loading means the answer is not availabl
 ### 10. Why is a clickable `div` not an appropriate action control?
 
 A `div` has no button semantics and does not automatically support keyboard activation, focus or disabled behaviour. A real `button` works with keyboards and assistive technology and communicates its purpose correctly. Styling should not replace native semantics.
+
+## Section D: resilience, offline operation and data integrity
+
+### 1. What is idempotency?
+
+Idempotency means repeating the same operation produces the same result as performing it once. The client assigns a stable operation ID before queuing a write, and the server stores the outcome under that ID. If a timeout causes the client to replay it, the server returns the original outcome instead of inserting another visit.
+
+### 2. Why must the client generate the idempotency key before sending the first request?
+
+The key identifies one logical action across every attempt. If the client creates a different key after a timeout, the server cannot know that the requests represent the same visit and may accept both. The key and request body must be durably stored together before the interface says the work is saved locally.
+
+### 3. Why is an idempotency key not enough to prevent every duplicate patient?
+
+It prevents one operation from being processed twice. A user can still create the same person through two separate operations with two valid keys, or two devices may create that person independently while offline. Patient duplication also requires facility-number constraints, matching rules and human-reviewed identity reconciliation.
+
+### 4. Why keep idempotency records after a request succeeds?
+
+An offline client may retry days or weeks later because it never received the original acknowledgement. Keeping the result allows the server to recognise that late replay. Retention should cover the maximum supported outage, retry and support window; after expiry, an uncertain replay goes to reconciliation rather than being inserted automatically.
+
+### 5. How would you handle duplicate clinical records that already exist?
+
+First prevent new duplicates and take a recoverable backup. Generate candidates without changing data, then have an authorised data steward and facility review them. Confirmed patient duplicates are linked or merged transactionally under a surviving identity with original identifiers and audit history preserved. Incorrect visits are voided with a reason rather than silently deleted. Ambiguous records remain separate and flagged.
+
+### 6. What does the client cache for offline work?
+
+Only the minimum authorised facility data required for care: relevant patient identity, recent or active clinical records, the follow-up list, reference data, sync checkpoints and queued actions. Pending actions remain until acknowledged. The client should not hold national extracts, unrelated facilities' records, plaintext credentials or unnecessary complete histories.
+
+### 7. How are queued actions synchronised after connectivity returns?
+
+The client refreshes authentication, then uploads small batches in dependency order. Each operation has an idempotency key and receives its own acknowledgement. Timeouts and server failures retry with exponential back-off and jitter; authentication pauses for login; validation failures stop retrying; conflicts enter review. Only acknowledged items leave the queue, so partial failure does not replay completed work incorrectly.
+
+### 8. What happens when an offline record and the national record were both changed?
+
+The offline write includes the server version it was based on. If that version is stale, the server returns a conflict instead of overwriting newer data. Safe non-overlapping fields may merge under an agreed rule; clinical conflicts show both versions, authors and times to an authorised clinician or data steward. The system preserves both versions and displays `needs review` until resolved.
+
+### 9. Why not use "last write wins" for clinical conflicts?
+
+The latest timestamp does not prove that a clinical fact is correct, especially when device clocks can differ and one user may have better information. Last-write-wins can silently discard valid care data. Important conflicts need explicit rules or accountable human review with both versions preserved.
+
+### 10. How do you protect sensitive data on a shared offline computer?
+
+Minimise the cached dataset, encrypt the database with a device-bound key, use named accounts and automatic locks, enforce operating-system permissions and full-disk encryption, use expiring offline access, and keep patient data out of logs and notifications. Never remove unsynchronised work merely to satisfy a cache-retention limit.
