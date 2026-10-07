@@ -175,3 +175,37 @@ Bring programme representatives and the business analyst into early refinement, 
 ### 10. What can you do as a Software Engineer if you are not the manager?
 
 Model the desired behaviour in my own changes, collect evidence, propose small improvements, pair with teammates and raise risks constructively. I can write tests, update documentation, keep reviews focused and avoid direct production changes. I would seek agreement from the engineering lead for team-wide controls rather than claiming authority I do not have.
+
+## Section G: executive briefing
+
+### 1. Why did you recommend phased delivery rather than simply accepting the two-week deadline?
+
+The full change affects 1,500 databases, offline clients, synchronisation compatibility and a security-reviewed external interface. Treating it as a simple field change hides the possibility of lost reporting data and interrupted clinical work. Phased delivery shows useful progress in two weeks while preserving a six-week path to safe national completion.
+
+### 2. Why not simply tell leadership that engineering needs six weeks?
+
+Leadership needs options and consequences, not only a technical estimate. The phased option separates early availability from national mandatory enforcement, identifies what can safely happen in two weeks, and gives leaders measurable criteria for expansion. It respects the policy urgency while making residual risk explicit.
+
+### 3. What makes a rollout "backward compatible"?
+
+During the transition, national services can understand both the old format without the field and the new format with it. The database first accepts the new value without immediately requiring every old client to provide it. After compatible clients have reached the agreed coverage and exceptions are managed, a later change can enforce the requirement.
+
+### 4. Why use a feature flag?
+
+A feature flag lets the software be deployed without immediately enforcing the new field everywhere. The team can enable it for pilot facilities, measure errors and disable it quickly if necessary. It supports gradual activation, but it does not replace migration testing, security review or rollback planning.
+
+### 5. Why must reports label the transition period?
+
+For several weeks, some facilities will submit the new field while older or offline facilities will not. If reports present those missing values as complete national data, decision-makers may draw incorrect conclusions. Labelling completeness and version coverage makes the temporary limitation visible.
+
+### 6. Who accepts the risk if leadership still requires the two-week national deadline?
+
+Engineering explains the likelihood and consequences, proposes controls and states which assurance work would be reduced. The accountable policy or programme owner decides whether the remaining risk is acceptable; engineers should not silently make that business decision. The acceptance and deferred work should be recorded.
+
+### 7. What measures determine whether the pilot should expand?
+
+Migration success, synchronisation success, field completion, clinical save failures, support incidents, security findings and rollback readiness. The criteria and thresholds should be agreed before the pilot so schedule pressure does not redefine success after results appear.
+
+### 8. Why include offline facilities in the decision?
+
+A deployment announcement does not update a facility that cannot connect. Older clients may continue creating data for days, so the national service must remain compatible and leadership must distinguish software release from actual facility adoption. Coverage should be measured from acknowledgements, not assumptions.
