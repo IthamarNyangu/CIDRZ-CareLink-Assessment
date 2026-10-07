@@ -209,3 +209,29 @@ Migration success, synchronisation success, field completion, clinical save fail
 ### 8. Why include offline facilities in the decision?
 
 A deployment announcement does not update a facility that cannot connect. Older clients may continue creating data for days, so the national service must remain compatible and leadership must distinguish software release from actual facility adoption. Coverage should be measured from acknowledgements, not assumptions.
+
+## Section H: submission and implementation choices
+
+### 1. Why are there separate small and volume databases?
+
+The small database makes the UI, Swagger and business cases easy to inspect during a demonstration. The volume database proves that the identical schema and query path handle 100,000 patients and 400,000 visits. Both are generated from committed migrations and seeders; database binaries are not the source of truth.
+
+### 2. Why does the application use the small database by default?
+
+A reviewer can start it quickly and understand each record. Defaulting to hundreds of thousands of generated rows would slow setup and obscure the rule without improving the demonstration. The documented connection-string override selects the volume database for performance verification.
+
+### 3. Why are database files excluded from Git?
+
+They are generated artefacts that can be large and machine-specific. Committing the migration and deterministic seeders proves the database can be reproduced from empty, avoids repository bloat and gives reviewers a trustworthy setup path.
+
+### 4. What did you build and what did you leave out?
+
+I built the GET endpoint, relational schema/migration, small and volume seeders, database-side rule/filter/sort/pagination, validation, static role/facility access, correlation handling, automated tests and React worklist. Offline sync, external integrations and production identity are designs only. The contacted POST was a stretch goal left out to prioritise the required deliverables.
+
+### 5. Which frontend accessibility decisions did you make?
+
+I used persistent labels and semantic controls with visible focus; status is always written as text rather than colour alone; and errors are announced with a retry path. I also used readable contrast, responsive reflow and server pagination. I did not complete a full NVDA/browser matrix or exact interactive 200% zoom session, and I state that limitation.
+
+### 6. Why disclose substantial AI assistance so directly?
+
+The assessment permits AI but requires an accurate declaration and expects me to explain and modify the result. Hiding assistance would create an integrity risk. The correct response is to disclose how it was used, verify the work, learn every important decision and be ready to change the code during the interview.
