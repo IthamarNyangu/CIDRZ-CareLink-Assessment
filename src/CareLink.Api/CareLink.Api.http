@@ -1,6 +1,9 @@
 @CareLink.Api_HostAddress = http://localhost:5214
+@ManagerToken = manager-demo-token
 
-GET {{CareLink.Api_HostAddress}}/weatherforecast/
+GET {{CareLink.Api_HostAddress}}/api/follow-up?facility_id=FAC-0101&status=overdue&overdue_days=7&sort=days_overdue_desc&page=1&page_size=50
+Authorization: Bearer {{ManagerToken}}
+X-Correlation-ID: http-file-demo-001
 Accept: application/json
 
 ###

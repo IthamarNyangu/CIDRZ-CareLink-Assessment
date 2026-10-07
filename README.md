@@ -36,8 +36,9 @@ C-review.md              Ranked review of both supplied extracts and refactor
 D-resilience.md          Duplicate replay, offline sync and data integrity
 F-practice.md            90-day engineering-practice plan
 G-briefing.md            Executive briefing (339 words)
-INTERVIEW-QA.md          Study questions and model answers
 PERFORMANCE.md           Reproducible scale-test method and observations
+declaration.md           AI/tool-use declaration
+E-presentation.pptx      Editable presentation source
 ```
 
 ## Prerequisites
@@ -171,7 +172,7 @@ Given another week I would:
 
 1. implement the authorised, idempotent contacted endpoint and its UI state;
 2. add integration tests against a production-target database engine and concurrent load tests;
-3. test clean installation in a separate machine/container and add CI;
+3. add continuous integration and test installation on additional operating systems;
 4. conduct NVDA, browser-compatibility and 200%-zoom testing with representative users;
 5. prototype the encrypted offline queue and conflict workflow described in Section D.
 
