@@ -2,7 +2,7 @@
 
 ## Position and first priorities
 
-As a Software Engineer, I would model good practice, provide evidence and propose changes to the engineering lead rather than claim management authority. Clinical services continue, so improvement must be incremental.
+As a Software Engineer, I would not unilaterally reorganise the team or impose policy. I would model the practices in my own work, make the current problems measurable, propose small changes to the Senior Software Engineer and help teammates adopt them. Clinical services must continue, so the plan reduces risk incrementally rather than freezing delivery.
 
 My first two changes would be:
 
