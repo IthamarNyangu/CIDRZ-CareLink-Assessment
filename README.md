@@ -4,7 +4,9 @@ CareLink Follow Up is a thin, working vertical slice for identifying patients wh
 
 ## Current implementation status
 
-The repository is under active development for the CIDRZ technical assessment. The final submission instructions in this file will be verified from a clean checkout before submission.
+The API vertical slice, migration, sample data, filtering, pagination, validation,
+static role tokens, facility scoping, correlation IDs and API tests are implemented.
+The React screen and written assessment sections remain in progress.
 
 ## Stack and rationale
 
@@ -45,19 +47,40 @@ The brief asks the screen to show `due_soon`, `missed` and `overdue`, while the 
 
 When a status filter is supplied, every returned item's `follow_up_status` must match that filter. This differs from the contradictory sample response and is documented so that the behaviour is predictable and testable.
 
-## Running the solution
-
-The exact clean-machine commands will be completed and tested as implementation progresses. The intended entry points are:
+## Running the API
 
 ```powershell
 dotnet restore
 dotnet test
-dotnet run --project src/CareLink.Api
+dotnet run --project src/CareLink.Api -- --seed-demo
+dotnet run --project src/CareLink.Api --launch-profile http
 ```
+
+The first run applies the migration and creates deterministic demonstration data.
+It is safe to run again because the seeder exits when data already exists. The second
+run starts the API and Swagger UI at `http://localhost:5214/swagger`.
+
+The protected endpoint is:
+
+```text
+GET /api/follow-up?facility_id=FAC-0101&status=overdue&overdue_days=7&page=1&page_size=50
+```
+
+Swagger's **Authorize** button accepts either demonstration bearer token:
+
+- `manager-demo-token`: manager access to all facilities;
+- `clinic-0101-demo-token`: clinic staff access to `FAC-0101` only.
+
+These committed tokens are intentionally non-secret assessment fixtures. A production
+deployment would use an identity provider, short-lived signed tokens, secret management,
+auditing and a formal user-to-facility assignment process.
+
+Clients may provide an `X-Correlation-ID` request header. The API returns it in the
+response header and problem response so operational teams can match a reported failure
+to its server log. If none is supplied, the API generates one.
 
 Front-end commands will be added after the React application is scaffolded.
 
 ## Scope discipline
 
 The required GET endpoint, screen, tests, written sections, presentation and reproducible setup take priority. `POST /api/follow-up/{id}/contacted` is a stretch goal and will be added only after all required work is complete.
-

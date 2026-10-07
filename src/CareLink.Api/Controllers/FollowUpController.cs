@@ -1,13 +1,17 @@
 using CareLink.Api.Contracts;
+using CareLink.Api.Security;
 using CareLink.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareLink.Api.Controllers;
 
 [ApiController]
 [Route("api/follow-up")]
+[Authorize(Roles = CareLinkRoles.Manager + "," + CareLinkRoles.ClinicStaff)]
 public sealed class FollowUpController(
     IFollowUpQueryService followUpQueryService,
+    IFacilityAccessService facilityAccessService,
     ILogger<FollowUpController> logger) : ControllerBase
 {
     private static readonly HashSet<string> SupportedSorts =
@@ -49,6 +53,15 @@ public sealed class FollowUpController(
             }
 
             return ValidationProblem(ModelState);
+        }
+
+        if (!facilityAccessService.CanAccess(User, facilityId!))
+        {
+            logger.LogWarning(
+                "User {UserId} attempted to access facility {FacilityId}",
+                User.Identity?.Name ?? "unknown",
+                facilityId);
+            return Forbid();
         }
 
         logger.LogInformation(

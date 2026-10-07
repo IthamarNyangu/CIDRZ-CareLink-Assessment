@@ -1,5 +1,6 @@
 using CareLink.Api.Contracts;
 using CareLink.Api.Controllers;
+using CareLink.Api.Security;
 using CareLink.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -14,6 +15,7 @@ public sealed class FollowUpControllerTests
         var service = new CapturingFollowUpQueryService();
         var controller = new FollowUpController(
             service,
+            new AllowFacilityAccessService(),
             NullLogger<FollowUpController>.Instance);
 
         var response = await controller.GetAsync(
@@ -42,6 +44,7 @@ public sealed class FollowUpControllerTests
         var service = new CapturingFollowUpQueryService();
         var controller = new FollowUpController(
             service,
+            new AllowFacilityAccessService(),
             NullLogger<FollowUpController>.Instance);
 
         var response = await controller.GetAsync(
@@ -74,5 +77,12 @@ public sealed class FollowUpControllerTests
                     Total: 0,
                     Items: []));
         }
+    }
+
+    private sealed class AllowFacilityAccessService : IFacilityAccessService
+    {
+        public bool CanAccess(
+            System.Security.Claims.ClaimsPrincipal user,
+            string facilityId) => true;
     }
 }
